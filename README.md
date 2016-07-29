@@ -7,15 +7,15 @@ You will need:
 <li>A Battle.Net API key from https://dev.battle.net</li>
 </ul>
 <br>
-Before you run, open the exe.config and:
+Before you run, open the Properties.Settings(or exe.config after building 1st time) and:
 <ul>
 <li>Add your Battle.Net API key to the WowApiKey value</li>
 <li>Add your Discord Bot token key to the DiscordBotToken value</li>
-<li>Add your Discord login email</li>
-<li>Add your Discord login pw</li>
-<li>Add your desired WoW Realm</li>
-<li>Add your desired guild name on said realm</li>
+<li>Add your Discord login email value</li>
+<li>Add your Discord login pw value</li>
+<li>Add your desired WoW Realm value</li>
+<li>Add your desired guild name value</li>
 </ul>
 <br>
 <h3>Please note</h3>
-If you get reference errors you may need to redownload the NuGet packages.
+You will need Visual Studio supporting .net 4.5 framework in order to build the solution.

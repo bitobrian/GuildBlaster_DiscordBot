@@ -1,6 +1,11 @@
 # GuildBlaster_DiscordBot
 A .net Discordapp chatbot with Battle.net integration.
 
+<h2>Thank you</h2>
+A big thanks to these projects for helping me get this started.<br>
+https://github.com/NaamloosDT/DiscordSharp_Starter<br>
+https://github.com/Luigifan/DiscordSharp
+
 You will need:
 <ul>
 <li>A Discord App with a bot from https://discordapp.com/developers.</li>

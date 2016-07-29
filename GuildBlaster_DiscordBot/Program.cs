@@ -84,7 +84,7 @@ namespace GuildBlaster_DiscordBot
             {
                 string[] messageText = e.MessageText.Split(' ');
                               
-                switch (messageText[0])
+                switch (messageText[0].ToLower())
                 {
                     case "!admin": CheckAdminStatus(e);
                         break;

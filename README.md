@@ -1,5 +1,5 @@
 # GuildBlaster_DiscordBot
-A .net Discordapp chatbot with Battle.net integration(WIP).
+A .net Discordapp chatbot with Battle.net integration for World of Warcraft(WIP).
 
 <h2>Thank you</h2>
 A big thanks to these projects for helping me get this started.<br>

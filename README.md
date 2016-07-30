@@ -32,5 +32,5 @@ Should you feel the need to support development on this project, then please con
 </ul>
 <br>
 <h2>Notes</h2>
-You will need Visual Studio supporting .net 4.5 framework in order to build the solution.You will also need the latest and greatest that can properly access NuGet. The packages should download upon opening the solution.
+You will need Visual Studio supporting .net 4.5 framework in order to build the solution. You will also need the latest and greatest that can properly access NuGet. The packages should download upon opening the solution.
 

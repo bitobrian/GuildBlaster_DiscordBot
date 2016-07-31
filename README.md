@@ -1,4 +1,4 @@
-# GuildBlaster_DiscordBot
+# Guild Blaster, a Discord Bot
 A .net Discordapp chatbot with Battle.net integration for World of Warcraft(WIP).
 
 <h2>Thank you</h2>

@@ -3,15 +3,14 @@ A .net Discordapp chatbot with Battle.net integration for World of Warcraft(WIP)
 
 <h2>Thank you</h2>
 A big thanks to these projects for helping me get this started.<br>
-https://github.com/NaamloosDT/DiscordSharp_Starter<br>
-https://github.com/Luigifan/DiscordSharp
+Discord.Net - http://rtd.discord.foxbot.me/en/legacy/index.html
+https://github.com/NaamloosDT/Discord.NET_Starter
 
 <h2>Donations</h2>
 Should you feel the need to support development on this project, then please consider donating to:
 <ul>
 <li>The <a href="http://www.jdrf.org/donate/">JDRF Organization</a> to support research for Type 1 Diabetes. My youngest was diagnosed at 11 months old and a cure or even a better understanding could improve her quality of life like many others around the world.</li>
-<li><a href="https://github.com/NaamloosDT/DiscordSharp_Starter">DiscordSharp Starter Bot project</a></li>
-<li><a href="https://github.com/Luigifan/DiscordSharp">The DiscordSharp wrapper project</a></li>
+<li><a href="http://rtd.discord.foxbot.me/en/legacy/index.html">Discord.Net</a></li>
 </ul>
 
 <h2>Instructions</h2>
@@ -25,8 +24,6 @@ Should you feel the need to support development on this project, then please con
 <ul>
 <li>Add your Battle.Net API key to the WowApiKey value</li>
 <li>Add your Discord Bot token key to the DiscordBotToken value</li>
-<li>Add your Discord login email value</li>
-<li>Add your Discord login pw value</li>
 <li>Add your desired WoW Realm value</li>
 <li>Add your desired guild name value</li>
 </ul>

@@ -1,155 +1,143 @@
-﻿using DiscordSharp;
-using DiscordSharp.Objects;
+﻿using DiscordDotNet = Discord.DiscordClient;
+using Discord.Audio;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using DiscordSharp.Events;
 using System.IO;
 using Newtonsoft.Json;
 using DiscordSharp_Starter;
-using System.Text.RegularExpressions;
+using NAudio.Wave;
+using System.Linq;
 
 namespace GuildBlaster_DiscordBot
 {
     class Program
     {
         #region Class Vars
-        public static bool isbot = true;
-        private static DiscordClient client;
+        private static DiscordDotNet _client;
         private static Realm realm;
         #endregion
 
         #region Main
-        static void Main(string[] args)
+        static void Main(string[] args) => new Program().Start();
+
+        public void Start()
         {
 
             #region Bot Startup
-            // First of all, a DiscordClient will be created, and the email and password will be defined.
-            Console.WriteLine("Starting GuildBlast Bot");
-            Console.WriteLine("Reading config");
+            Console.WriteLine("Starting..");
+            Console.WriteLine("Create client..");
+            _client = new DiscordDotNet();
+            Console.WriteLine("done..");
 
-            // Fill in token and change isbot to true
-            client = new DiscordClient(Properties.Settings.Default.DiscordBotToken, true);
-            client.ClientPrivateInformation.Email = Properties.Settings.Default.ClientEmail;
-            client.ClientPrivateInformation.Password = Properties.Settings.Default.ClientPassword;
+            Console.WriteLine("SetRealm..");
             realm = new Realm();
+            Console.WriteLine("done..");
 
             // Get Realm Info
+            Console.WriteLine("Load realm status from blizzard api..");
             LoadRealmStatus();
-                        
+            Console.WriteLine("done..");
             #endregion
-
+            
             #region Events - General
-            Console.WriteLine("Defining Events");
-            // find that one you interested in 
+            Console.WriteLine("Waiting on input..");
+            _client.MessageReceived += async (s, e) =>
+             {
+                 if (!e.Message.IsAuthor)
+                 {
+                     string[] messageText = e.Message.Text.Split(' ');
 
-            client.Connected += (sender, e) => // Client is connected to Discord
-            {
-                Console.WriteLine("Connected! User: " + e.User.Username);
-                // If the bot is connected, this message will show.
-                // Changes to client, like playing game should be called when the client is connected,
-                // just to make sure nothing goes wrong.
-                client.UpdateCurrentGame("Guild Crier"); // This will display at "Playing: "
-                //Whoops! i messed up here. (original: Bot online!\nPress any key to close this window.)
-            };
+                     switch (messageText[0].ToLower())
+                     {
+                         // TODO: method needs fixing
+                         //case "!admin":
+                         //    CheckAdminStatus(e);
+                         //    break;
+                         case "!help":
+                             await e.Channel.SendMessage(ShowHelp());
+                             break;
+                         case "!cat":
+                             ShowRandomCatPic(e);
+                             break;
+                         case "!updategame":
+                             SetRandomPlayingName();
+                             break;
+                         case "!status":
+                             await e.Channel.SendMessage(AnnounceStatus());
+                             break;
+                         case "!updatestatus":
+                             LoadRealmStatus(1);
+                             break;
+                         case "!realminfo":
+                             await e.Channel.SendMessage(ShowRealmInfo());
+                             break;
+                         case "!news":
+                             await e.Channel.SendMessage(ShowGuildNews());
+                             break;
+                         case "!char":
+                             await e.Channel.SendMessage(GetCharacterInfo(messageText));
+                             break;
+                         case "!mrbigglesworth":
+                             await e.Channel.SendMessage("*You enter Naxxramas and immediately strike down Mr. Bigglesworth.*");
+                             SendSoundToVoice();
+                             Console.WriteLine("Mr. Bigglesworth Played");
+                             break;
+                     }
+                 }
 
+             };
 
-            client.PrivateMessageReceived += (sender, e) => // Private message has been received
-            {
-                if (e.Message == "!help")
-                {
-                    e.Author.SendMessage("This is a private message!");
-                    // Because this is a private message, the bot should send a private message back
-                    // A private message does NOT have a channel
-                }
-                if (e.Message.StartsWith("join"))
-                {
-                    if (!isbot) {
-                        string inviteID = e.Message.Substring(e.Message.LastIndexOf('/') + 1);
-                        // Thanks to LuigiFan (Developer of DiscordSharp) for this line of code!
-                        client.AcceptInvite(inviteID);
-                        e.Author.SendMessage("Joined your discord server!");
-                        Console.WriteLine("Got join request from " + inviteID);
-                    } else
-                    {
-                        e.Author.SendMessage("Please use this url instead!" +
-                            "https://discordapp.com/oauth2/authorize?client_id=208042164234485771&scope=bot&permissions=0");
-                    }
-                }
-            };
-
-
-            client.MessageReceived += (sender, e) => // Channel message has been received
-            {
-                string[] messageText = e.MessageText.Split(' ');
-                              
-                switch (messageText[0].ToLower())
-                {
-                    case "!admin": CheckAdminStatus(e);
-                        break;
-                    case "!help": ShowHelp(e);
-                        break;
-                    case "!cat": ShowRandomCatPic(e);
-                        break;
-                    case "!updategame": SetRandomPlayingName(e);
-                        break;
-                    case "!status": AnnounceStatus();
-                        break;
-                    case "!updatestatus": LoadRealmStatus(1);
-                        break;
-                    case "!realminfo": ShowRealmInfo();
-                        break;
-                    case "!news": ShowGuildNews();
-                        break;
-                    case "!char": GetCharacterInfo(messageText);
-                        break;
-                }
-            };
+            _client.ExecuteAndWait(async () => {
+                await _client.Connect(Properties.Settings.Default.DiscordBotToken);
+            });
+            
             #endregion
             
             #region Events - Environment
             //  This sends a message to every new channel on the server
-            client.ChannelCreated += (sender, e) =>
-                {
-                    if (e.ChannelCreated.Type == ChannelType.Text)
-                    {
-                        e.ChannelCreated.SendMessage("Nice! a new channel has been created!");
-                    }
-                };
+            //client.ChannelCreated += (sender, e) =>
+            //    {
+            //        if (e.ChannelCreated.Type == ChannelType.Text)
+            //        {
+                        
+            //            e.ChannelCreated.SendMessage("Nice! a new channel has been created!");
+            //        }
+            //    };
 
-            //  When a user joins the server, send a message to them.
-            client.UserAddedToServer += (sender, e) =>
-                {
-                    e.AddedMember.SendMessage("Welcome to my server! rules:");
-                    e.AddedMember.SendMessage("1. be nice!");
-                    e.AddedMember.SendMessage("- Guild Crier!");
-                };
+            ////  When a user joins the server, send a message to them.
+            //client.UserAddedToServer += (sender, e) =>
+            //    {
+            //        e.AddedMember.SendMessage("Welcome to my server! rules:");
+            //        e.AddedMember.SendMessage("1. be nice!");
+            //        e.AddedMember.SendMessage("- Guild Crier!");
+            //    };
 
-            //  Don't want messages to be removed? this piece of code will
-            //  Keep messages for you. Remove if unused :)
-            client.MessageDeleted += (sender, e) =>
-                {
-                    e.Channel.SendMessage("Removing messages has been disabled on this server!");
-                    e.Channel.SendMessage("<@" + e.DeletedMessage.Author.ID + "> sent: " + e.DeletedMessage.Content.ToString());
-                };
+            ////  Don't want messages to be removed? this piece of code will
+            ////  Keep messages for you. Remove if unused :)
+            //client.MessageDeleted += (sender, e) =>
+            //    {
+            //        e.Channel.SendMessage("Removing messages has been disabled on this server!");
+            //        e.Channel.SendMessage("<@" + e.DeletedMessage.Author.ID + "> sent: " + e.DeletedMessage.Content.ToString());
+            //    };
             #endregion
         
             #region Connect to discord
-            try {
-                // Make sure that IF something goes wrong, the user will be notified.
-                // The SendLoginRequest should be called after the events are defined, to prevent issues.
-                Console.WriteLine("Sending login request");
-                client.SendLoginRequest();
-                Console.WriteLine("Connecting client in separate thread");
-                // Cannot convert from 'method group' to 'ThreadStart', so i removed threading
-                // Pass argument 'true' to use .Net sockets.
-                client.Connect();
-                // Login request, and then connect using the discordclient i just made.
-                Console.WriteLine("Client connected!");
-            } catch (Exception e) {
-                Console.WriteLine("Something went wrong!\n" + e.Message + "\nPress any key to close this window.");
-            }
+            //try {
+            //    // Make sure that IF something goes wrong, the user will be notified.
+            //    // The SendLoginRequest should be called after the events are defined, to prevent issues.
+            //    Console.WriteLine("Sending login request");
+            //    client.SendLoginRequest();
+            //    Console.WriteLine("Connecting client in separate thread");
+            //    // Cannot convert from 'method group' to 'ThreadStart', so i removed threading
+            //    // Pass argument 'true' to use .Net sockets.
+            //    client.Connect();
+            //    // Login request, and then connect using the discordclient i just made.
+            //    Console.WriteLine("Client connected!");
+            //} catch (Exception e) {
+            //    Console.WriteLine("Something went wrong!\n" + e.Message + "\nPress any key to close this window.");
+            //}
 
             // Done! your very own Discord bot is online!
             #endregion
@@ -158,51 +146,97 @@ namespace GuildBlaster_DiscordBot
             // Load Timer
             //Timer t = new Timer(TimerCallback, null, 0, 600000);
 
-            Console.ReadKey(); // If the user presses a key, the bot will shut down.
-            Environment.Exit(0); // Make sure all threads are closed.
+            //Console.ReadKey(); // If the user presses a key, the bot will shut down.
+            //Environment.Exit(0); // Make sure all threads are closed.
             #endregion
 
         }
-
-        private static void GetCharacterInfo(string [] value)
+        // TODO: rearrange methods
+        private static void SendSoundToVoice(/*string soundName*/)
         {
-            CharacterProgression character = new CharacterProgression(value[1]);
+            string fileName = Properties.Settings.Default.SoundsPath + @"creature\KelThuzad\" + @"NA_KelThuzad_BigglesworthDies.mp3";
+
+            SendVoice(fileName, _client);
+
+        }
+
+        private static void SendAudio(string fileName)
+        {     
             
-            // TODO: get char info
-            if(character.IsError)
-            {
-                client.SendMessageToChannel(value[1] + " does not exist.", client.GetChannelByName("general"));
-            }
-            else if (value[2].Equals("hks"))
-            {
-                client.SendMessageToChannel(value[1] + " has " + character.GetHonorableKills() + " honorable kills.", client.GetChannelByName("general"));
-            }
         }
-        #endregion
-
-        #region Timers
-        private static void TimerCallback(Object o)
+               
+        private static async void SendVoice(string filePath, DiscordDotNet _client)
         {
-            // TODO: Function to allow automated status updates WIP
-            //LoadRealmStatus();
-            //AnnounceStatus();
-            //// Display the date/time when this method got called.
-            //Console.WriteLine("Status Annouced: " + DateTime.Now);
-            //// Force a garbage collection to occur for this demo.
-            //GC.Collect();
+            _client.UsingAudio(x => // Opens an AudioConfigBuilder so we can configure our AudioService
+            {
+                x.Mode = AudioMode.Outgoing; // Tells the AudioService that we will only be sending audio
+            });
+
+            var voiceChannel = _client.FindServers("proper villains").FirstOrDefault().VoiceChannels.FirstOrDefault(); // Finds the first VoiceChannel on the server 'Music Bot Server'
+
+            var _vClient = await _client.GetService<AudioService>() // We use GetService to find the AudioService that we installed earlier. In previous versions, this was equivelent to _client.Audio()
+                    .Join(voiceChannel); // Join the Voice Channel, and return the IAudioClient.
+
+            var channelCount = _client.GetService<AudioService>().Config.Channels; // Get the number of AudioChannels our AudioService has been configured to use.
+            var OutFormat = new WaveFormat(48000, 16, channelCount); // Create a new Output Format, using the spec that Discord will accept, and with the number of channels that our client supports.
+            using (var MP3Reader = new Mp3FileReader(filePath)) // Create a new Disposable MP3FileReader, to read audio from the filePath parameter
+            using (var resampler = new MediaFoundationResampler(MP3Reader, OutFormat)) // Create a Disposable Resampler, which will convert the read MP3 data to PCM, using our Output Format
+            {
+                resampler.ResamplerQuality = 60; // Set the quality of the resampler to 60, the highest quality
+                int blockSize = OutFormat.AverageBytesPerSecond / 50; // Establish the size of our AudioBuffer
+                byte[] buffer = new byte[blockSize];
+                int byteCount;
+
+                while ((byteCount = resampler.Read(buffer, 0, blockSize)) > 0) // Read audio into our buffer, and keep a loop open while data is present
+                {
+                    if (byteCount < blockSize)
+                    {
+                        // Incomplete Frame
+                        for (int i = byteCount; i < blockSize; i++)
+                            buffer[i] = 0;
+                    }
+                    _vClient.Send(buffer, 0, blockSize); // Send the buffer to Discord
+                }
+            }
+
+            //await _vClient.VoiceSocket.Disconnect();            
+        }
+
+        private static byte[] ReadFromFile(string fileName)
+        {
+            MemoryStream ms = new MemoryStream();
+            using (FileStream source = File.Open(fileName, FileMode.Open))
+            {
+                source.CopyTo(ms);
+                return ms.ToArray();
+            }
+        }
+
+        private static string GetCharacterInfo(string [] command)
+        {
+            CharacterProgression character = new CharacterProgression(command[1]);
+                        
+            if(character.IsError)
+            {                
+                return command[1] + " does not exist.";
+            }
+            else /*if (value[2].Equals("hks"))*/
+            {
+                return command[1] + " has " + character.GetHonorableKills() + " honorable kills.";
+            }
         }
         #endregion
-
+        
         #region !commands methods
-        private static void ShowGuildNews()
+        private static string ShowGuildNews()
         {
             GuildNews news = new GuildNews();
-            client.SendMessageToChannel(news.LatestGuildNews, client.GetChannelByName("general"));
+            return news.LatestGuildNews;
         }
 
-        private static void ShowRealmInfo()
+        private static string ShowRealmInfo()
         {
-            client.SendMessageToChannel("Realm information: \n" +
+            return "Realm information: \n" +
                 "Realm: " + realm.name + "\n" +
                 "Locale: " + realm.locale + "\n" +
                 "Population: " + realm.population + "\n" +
@@ -210,13 +244,12 @@ namespace GuildBlaster_DiscordBot
                 "Status: " + realm.status + "\n" +
                 "Timezone: " + realm.timezone + "\n" +
                 "Type: " + realm.type
-                , client.GetChannelByName("general"));
+                ;
         }
 
         private static void LoadRealmStatus(int v)
         {
             LoadRealmStatus();
-            client.SendMessageToChannel("Realm status updated.", client.GetChannelByName("general"));
         }
 
         private static void LoadRealmStatus()
@@ -240,7 +273,7 @@ namespace GuildBlaster_DiscordBot
             }
         }
 
-        private static void AnnounceStatus()
+        private static string AnnounceStatus()
         {
             string s = "offline";
             if (realm.status) s = "online";
@@ -249,13 +282,16 @@ namespace GuildBlaster_DiscordBot
 
             try
             {
-                client.SendMessageToChannel(Properties.Settings.Default.GuildName + ", " + realm.name + " is currently " + s + " and " + q + " have a wait. - Updated " + realm.lastUpdated.ToShortTimeString(), client.GetChannelByName("general"));
-                client.SendMessageToChannel("Type !help for a list of commands.", client.GetChannelByName("general"));
+                return Properties.Settings.Default.GuildName + ", " + realm.name + " is currently " + s + " and " + q + " have a wait. - Updated " + realm.lastUpdated.ToShortTimeString()+"\n"+
+                "Type !help for a list of commands.";
             }
             catch (Exception error) { Console.WriteLine(error.StackTrace); }
+
+            // TODO: Handle better
+            return "error";
         }
 
-        private static void SetRandomPlayingName(DiscordMessageEventArgs e)
+        private static void SetRandomPlayingName()
         {
             Random r = new Random();
             string value = string.Empty;
@@ -292,10 +328,10 @@ namespace GuildBlaster_DiscordBot
                     value = "the Game";
                     break;
             }
-            client.UpdateCurrentGame(value);
+            _client.SetGame(new Discord.Game(value));
         }
                
-        private static void ShowHelp(DiscordMessageEventArgs e)
+        private static string ShowHelp()
         {
             string help = "";
             string[] helpList = { "To enter a command type an ! then the keyword.",
@@ -311,13 +347,14 @@ namespace GuildBlaster_DiscordBot
                 help += s+"\n";    
             }
 
-            e.Channel.SendMessage(help);
+            return help;
         }
 
-        private static void ShowRandomCatPic(DiscordMessageEventArgs e)
+        private static void ShowRandomCatPic(Discord.MessageEventArgs e)
         {
             // People love this
             // All credit goes to https://github.com/NaamloosDT/DiscordSharp_Starter
+            
             Thread t = new Thread(new ParameterizedThreadStart(randomcat));
             t.Start(e.Channel);
             string s;
@@ -328,16 +365,17 @@ namespace GuildBlaster_DiscordBot
                 int pTo = s.LastIndexOf("\"}");
                 string cat = s.Substring(pFrom, pTo - pFrom);
                 webclient.DownloadFile("http://random.cat/i/" + cat, "cat.png");
-                client.AttachFile(e.Channel, "meow!", "cat.png");
+                e.Channel.SendMessage("Meow!");
+                e.Channel.SendFile("cat.png");
             }
         }
 
-        private static void CheckAdminStatus(DiscordMessageEventArgs e)
+        private static void CheckAdminStatus(Discord.MessageEventArgs e)
         {
             // Example from https://github.com/NaamloosDT/DiscordSharp_Starter
-            List<DiscordRole> roles = e.Author.Roles;
+            //List<DiscordRole> roles = e.Server.Roles.ToList<DiscordRole>;
 
-            foreach (DiscordRole role in roles)
+            foreach (Discord.Role role in e.Server.Roles)
             {
                 if (role.Name.Contains("bosses"))
                 {

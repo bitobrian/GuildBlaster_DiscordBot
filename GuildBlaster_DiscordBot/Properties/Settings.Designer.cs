@@ -25,7 +25,7 @@ namespace GuildBlaster_DiscordBot.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4j2ume5rntdx8dubygmghumg7y5uanmr")]
         public string WowApiKey {
             get {
                 return ((string)(this["WowApiKey"]));
@@ -34,7 +34,7 @@ namespace GuildBlaster_DiscordBot.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MjA5NzY5NTE3MjUxOTUyNjQw.CoFClg.hbbw89PcTH7GUFpVYyzeX0ja4cI")]
         public string DiscordBotToken {
             get {
                 return ((string)(this["DiscordBotToken"]));
@@ -43,25 +43,7 @@ namespace GuildBlaster_DiscordBot.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ClientEmail {
-            get {
-                return ((string)(this["ClientEmail"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ClientPassword {
-            get {
-                return ((string)(this["ClientPassword"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Thrall")]
         public string TargetRealm {
             get {
                 return ((string)(this["TargetRealm"]));
@@ -70,10 +52,19 @@ namespace GuildBlaster_DiscordBot.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Proper Villains")]
         public string GuildName {
             get {
                 return ((string)(this["GuildName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\\\\bdon\\ServerApps\\Sounds\\")]
+        public string SoundsPath {
+            get {
+                return ((string)(this["SoundsPath"]));
             }
         }
     }

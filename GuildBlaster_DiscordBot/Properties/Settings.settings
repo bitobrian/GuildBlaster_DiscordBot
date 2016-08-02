@@ -3,19 +3,19 @@
   <Profiles />
   <Settings>
     <Setting Name="WowApiKey" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">4j2ume5rntdx8dubygmghumg7y5uanmr</Value>
+      <Value Profile="(Default)"></Value>
     </Setting>
     <Setting Name="DiscordBotToken" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">MjA5NzY5NTE3MjUxOTUyNjQw.CoFClg.hbbw89PcTH7GUFpVYyzeX0ja4cI</Value>
+      <Value Profile="(Default)"></Value>
     </Setting>
     <Setting Name="TargetRealm" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Thrall</Value>
+      <Value Profile="(Default)"></Value>
     </Setting>
     <Setting Name="GuildName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Proper Villains</Value>
+      <Value Profile="(Default)"></Value>
     </Setting>
     <Setting Name="SoundsPath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">\\bdon\ServerApps\Sounds\</Value>
+      <Value Profile="(Default)"></Value>
     </Setting>
   </Settings>
 </SettingsFile>
